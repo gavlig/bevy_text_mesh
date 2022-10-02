@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use ttf2mesh::{TTFFile, Value, Glyph};
 
 use crate::{
-    mesh_cache::{CacheKey, MeshCache},
+    mesh_cache::{CacheKey, TTF2MeshCache},
     text_mesh::{FontStyle, TextMesh},
 };
 
@@ -46,7 +46,7 @@ pub(crate) struct MeshData {
 pub(crate) fn generate_text_mesh(
     text_mesh: &TextMesh,
     font: &mut TTFFile,
-    cache: Option<&mut MeshCache>,
+    cache: Option<&mut TTF2MeshCache>,
 ) -> MeshData {
     trace!("Generate text mesh: {:?}", text_mesh.text);
 
@@ -55,7 +55,7 @@ pub(crate) fn generate_text_mesh(
     let cache = match cache {
         Some(cache) => cache,
         None => {
-            internal_cache = Some(MeshCache::default());
+            internal_cache = Some(TTF2MeshCache::default());
             internal_cache.as_mut().unwrap()
         }
     };
@@ -141,7 +141,7 @@ pub(crate) fn generate_text_mesh(
             }
         };
 
-        // ttf glyph knows a ton of usefyl metrics
+        // ttf glyph knows a ton of useful metrics
         // this one sets how much we move after symbol is rendered
         let advance = glyph.inner.advance * scalar;
 
@@ -216,7 +216,7 @@ mod tests {
 
     #[test]
     fn test_generate_mesh() {
-        let mut mesh_cache = MeshCache::default();
+        let mut mesh_cache = TTF2MeshCache::default();
         let mut font = ttf2mesh::TTFFile::from_buffer_vec(get_font_bytes()).unwrap();
 
         let text_mesh = TextMesh {
@@ -246,7 +246,7 @@ mod bench {
 
     #[bench]
     fn bench_get_glyph_cached(b: &mut Bencher) {
-        let mut mesh_cache = MeshCache::default();
+        let mut mesh_cache = TTF2MeshCache::default();
         let mut font = ttf2mesh::TTFFile::from_buffer_vec(tests::get_font_bytes()).unwrap();
 
         let text_mesh = TextMesh::new_no_font("hello world!".to_string());

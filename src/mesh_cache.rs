@@ -38,11 +38,11 @@ impl Hash for Depth {
 // FIXME uhm, empty?
 impl Eq for Depth {}
 
-pub struct MeshCache {
+pub struct TTF2MeshCache {
     pub(crate) meshes: HashMap<CacheKey, ttf2mesh::Mesh<'static, ttf2mesh::Mesh3d>>,
 }
 
-impl Default for MeshCache {
+impl Default for TTF2MeshCache {
     fn default() -> Self {
         Self {
             meshes: HashMap::new(),
@@ -50,5 +50,5 @@ impl Default for MeshCache {
     }
 }
 
-unsafe impl Send for MeshCache {} // FIXME: verify soundness
-unsafe impl Sync for MeshCache {} // FIXME: verify soundness
+unsafe impl Send for TTF2MeshCache {} // FIXME: verify soundness
+unsafe impl Sync for TTF2MeshCache {} // FIXME: verify soundness

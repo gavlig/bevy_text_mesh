@@ -2,7 +2,7 @@ use bevy::render::render_resource::PrimitiveTopology;
 use bevy::{prelude::*, render::mesh::Indices};
 
 use crate::{
-    font_loader::TextMeshFont, mesh_cache::MeshCache, mesh_data_generator::generate_text_mesh,
+    font_loader::TextMeshFont, mesh_cache::TTF2MeshCache, mesh_data_generator::generate_text_mesh,
 };
 use crate::{mesh_data_generator::MeshData, text_mesh::TextMesh};
 
@@ -23,7 +23,7 @@ pub(crate) fn text_mesh(
         ),
         Or<(Changed<TextMesh>, Changed<TextMeshState>)>,
     >,
-    mut cache: ResMut<MeshCache>,
+    mut cache: ResMut<TTF2MeshCache>,
 ) {
     // per-text-mesh system. Triggered only if the TextMesh or TextMeshState change
     // = user changes text properties, or if/when the font is loaded
@@ -61,8 +61,10 @@ pub(crate) fn text_mesh(
 
                 apply_mesh(ttf2_mesh, &mut mesh);
 
+                let mesh_handle = meshes.add(mesh);
+
                 commands.entity(entity).insert_bundle(PbrBundle {
-                    mesh: meshes.add(mesh),
+                    mesh: mesh_handle,
                     material: material.map(|m| m.clone()).unwrap_or_else(|| {
                         materials.add(StandardMaterial {
                             base_color: text_mesh.style.color,
@@ -121,7 +123,7 @@ impl Default for TextMeshState {
     }
 }
 
-fn apply_mesh(mesh_data: MeshData, mesh: &mut Mesh) {
+pub(crate) fn apply_mesh(mesh_data: MeshData, mesh: &mut Mesh) {
     mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, mesh_data.vertices);
     mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, mesh_data.normals);
     mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, mesh_data.uvs);
